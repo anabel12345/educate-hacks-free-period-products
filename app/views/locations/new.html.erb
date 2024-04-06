@@ -66,7 +66,7 @@
       return formattedHTML;
     };
 
-    mapboxgl.accessToken = "<%= @mapbox_token %>";
+    mapboxgl.accessToken = "<%= @mapbox_access_token %>";
     let initCoords = [-74.5, 40];
     let map = new mapboxgl.Map({
       container: 'map',

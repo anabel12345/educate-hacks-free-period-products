@@ -1,4 +1,5 @@
 class LocationsController < ApplicationController
+  @mapbox_access_token = ENV['MAPBOX_ACCESS_TOKEN']
   before_action :set_location, only: %i[ show edit update destroy ]
 
   # GET /locations or /locations.json
@@ -16,6 +17,7 @@ class LocationsController < ApplicationController
 
   # GET /locations/new
   def new
+    @mapbox_access_token = ENV['MAPBOX_ACCESS_TOKEN']
     @location = Location.new
   end
 
