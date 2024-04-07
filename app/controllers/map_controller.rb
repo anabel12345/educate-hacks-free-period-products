@@ -8,4 +8,8 @@ class MapController < ApplicationController
   def inventories
     @mapbox_token = @@mapbox_access_token
   end
+
+  def search
+    @mapbox_token = @@mapbox_access_token
+  end
 end

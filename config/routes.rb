@@ -23,6 +23,7 @@ Rails.application.routes.draw do
   # testing for inventory interactivity
   get "inventories", to: "map#inventories"
 
+  get "search", to: "map#search"
 
   # Defines the root path route ("/")
   #root "locations#index"

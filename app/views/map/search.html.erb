@@ -1,0 +1,170 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <%= stylesheet_link_tag 'https://cdn.jsdelivr.net/npm/bulma@1.0.0/css/bulma.min.css' %>
+  <script src='https://api.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.js'></script>
+  <link href='https://api.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.css' rel='stylesheet' />
+  <style>
+    .map-popup {
+      max-width: 200px;
+    }
+    .map-canvas {
+      width: 100%;
+      height: 400px;
+    }
+  </style>
+</head>
+
+<body>
+  <section class="section">
+    <div class="container">
+      <div class="columns is-centered py-2">
+        <div class="column is-half">
+          <h1 class="title has-text-centered">👋 flow aid</h1>
+        </div>
+      </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="columns is-centered py-5">
+        <div class="field">
+          <div class="buttons">
+            <%= link_to "location", new_location_path , class: "button is-link" %>
+            <%= link_to "contact", contact_home_pages_path, class: "button is-link" %>
+            <%= link_to "about", about_home_pages_path, class: "button is-link" %>
+          </div>
+        </div>
+
+      </div>
+        
+      <div class="columns is-centered py-2">
+        <div class="column is-half">
+          <div id="map" class="map-canvas"></div>
+          <div id="user-location-text"></div>
+        </div>
+      </div>
+      
+      <div class="columns is-centered">
+        <div class="column is-half">
+          <div class="field">
+            <div class="buttons is-centered">
+              <button class="button is-primary"> 🎁 give items </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+  </section>
+
+</body>
+<script>
+  // ref: https://developer.mozilla.org/en-US/docs/Web/API/Geolocation/getCurrentPosition
+  function getUserLocation() {
+    const options = {
+      enableHighAccuracy: true,
+      timeout: 5000,
+      maximumAge: 0,
+    };
+
+    return new Promise((resolve, reject) => {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const {latitude, longitude} = position.coords;
+          resolve({latitude, longitude});
+        },
+        (error) => {
+          reject(error);
+        }
+      );
+    });
+  };
+  
+  // define initial location based on user enabling share-location or not
+  async function getInitLocation() {
+    try {
+      const userLocation = await getUserLocation();
+      console.log("user location:", userLocation);
+      return userLocation;
+
+    }
+    catch (error) {
+      console.error("Error getting user location:", error);
+    }
+  };
+
+  function getPopupHTML (latlong, name, qty) {
+    // Destructuring latitude and longitude from latlong array
+    const [lat, long] = latlong;
+
+    // Template for the popup content
+    const formattedHTML = `
+        <div class="popup">
+            <h3 class="popup-title">${name}</h3>
+            <p class="popup-info">Location: ${lat}, ${long}</p>
+            <p class="popup-info">Quantity: ${qty}</p>
+        </div>
+    `;
+    
+    return formattedHTML;
+  };
+  
+  async function initializeMap () {
+    const initZoomLevel = 14;
+    mapboxgl.accessToken = "<%= @mapbox_token %>";
+
+    const mapObj = new mapboxgl.Map({
+      container: "map",
+      style: "mapbox://styles/mapbox/streets-v11",
+      center: [-74.5, 40],
+      zoom: initZoomLevel,
+    })
+
+    let initLocation = await getInitLocation();
+    if (initLocation) {
+      mapObj.setCenter([initLocation.longitude, initLocation.latitude]);
+    }
+    // this fake-pin shall be removed for production
+    let initItem = {
+      name: "Sanitary Pads",
+      qty: 100,
+    }
+    addMarkerToMap(mapObj, initLocation, initItem);
+    return mapObj;
+  }
+
+  function addMarkerToMap (mapObj, location, item) {
+    // Initial marker
+    let marker = new mapboxgl.Marker()
+      .setLngLat([location.longitude, location.latitude])
+      .addTo(mapObj);
+
+    let popup = new mapboxgl.Popup({
+        className: "map-popup"
+    }).setHTML(
+      getPopupHTML([location.longitude, location.latitude], item.name, item.qty)
+    );
+    marker.setPopup(popup);
+  }
+
+  // TODO: integrate this into `initializeMap()`
+  async function updateUserLocation() {
+    const location = await getUserLocation();
+    if (location) {
+      let divTag = document.getElementById("user-location-text");
+      divTag.innerHTML = `user location: <${location.longitude}, ${location.latitude}>`;
+      return location;
+    }
+  }
+
+  let map = initializeMap();
+  let userLocation = updateUserLocation();
+  
+
+</script>
+
+
