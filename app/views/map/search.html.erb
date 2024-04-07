@@ -7,6 +7,9 @@
   <%= stylesheet_link_tag 'https://cdn.jsdelivr.net/npm/bulma@1.0.0/css/bulma.min.css' %>
   <script src='https://api.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.js'></script>
   <link href='https://api.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.css' rel='stylesheet' />
+  <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.min.js'></script>
+  <link href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.css' rel='stylesheet' />
+
   <style>
     .map-popup {
       max-width: 200px;
@@ -43,6 +46,9 @@
         
       <div class="columns is-centered py-2">
         <div class="column is-half">
+          <div id="map-loading" class="notification is-primary is-light">
+            Loading ...
+          </div>
           <div id="map" class="map-canvas"></div>
           <div id="user-location-text"></div>
         </div>
@@ -123,6 +129,7 @@
       center: [-74.5, 40],
       zoom: initZoomLevel,
     })
+    console.log('map created');
 
     let initLocation = await getInitLocation();
     if (initLocation) {
@@ -161,9 +168,25 @@
     }
   }
 
-  let map = initializeMap();
-  let userLocation = updateUserLocation();
-  
+  let loadingNotification = document.getElementById('map-loading');
+
+  // main functions
+  let map = initializeMap()
+    .then((mapObj) => {
+      let userLocation = updateUserLocation();
+      let geocoder = new MapboxGeocoder({
+          accessToken: mapboxgl.accessToken,
+          mapboxgl: mapboxgl
+      })
+      mapObj.addControl(geocoder);
+      loadingNotification.remove();
+      return mapObj;
+    })
+    .catch(error => {
+      console.error("unable to load map", error);
+    });
+    
+
 
 </script>
 
