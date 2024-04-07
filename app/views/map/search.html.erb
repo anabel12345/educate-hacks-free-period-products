@@ -9,6 +9,7 @@
   <link href='https://api.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.css' rel='stylesheet' />
   <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.min.js'></script>
   <link href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.css' rel='stylesheet' />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
 
   <style>
     .map-popup {
@@ -26,7 +27,7 @@
     <div class="container">
       <div class="columns is-centered py-2">
         <div class="column is-half">
-          <h1 class="title has-text-centered">👋 flow aid</h1>
+          <h1 class="title has-text-centered">👋 Flow Finder</h1>
         </div>
       </div>
   </section>
@@ -35,13 +36,30 @@
     <div class="container">
       <div class="columns is-centered py-5">
         <div class="field">
-          <div class="buttons">
-            <%= link_to "location", new_location_path , class: "button is-link" %>
-            <%= link_to "contact", contact_home_pages_path, class: "button is-link" %>
-            <%= link_to "about", about_home_pages_path, class: "button is-link" %>
-          </div>
-        </div>
+          <div class="buttons is-centered">
+            <%= link_to about_home_pages_path, class: "button is-active" do %>
+              <span class="icon">
+                <i class="fas fa-info-circle"></i>
+              </span>
+              <span>About</span>
+            <% end %>
 
+            <%= link_to contact_home_pages_path, class: "button is-active" do %>
+              <span class="icon">
+                <i class="fas fa-envelope"></i>
+              </span>
+              <span>Contact</span>
+            <% end %>
+
+            <%= link_to new_location_path, class: "button is-active" do %>
+              <span class="icon">
+                <i class="fas fa-map-marker-alt"></i>
+              </span>
+              <span>Location</span>
+            <% end %>
+          </div>
+
+          </div>
       </div>
         
       <div class="columns is-centered py-2">
